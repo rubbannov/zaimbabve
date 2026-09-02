@@ -56,6 +56,11 @@ DEFAULT_SECRET="deploy-hugo-secretkey2026"
 read -p "Введите секретный ключ для Webhook [$DEFAULT_SECRET]: " WEBHOOK_SECRET
 WEBHOOK_SECRET=${WEBHOOK_SECRET:-$DEFAULT_SECRET}
 
+# 4. Интерактивный запрос Email для Certbot
+echo -e "${YELLOW}Введите Email для уведомлений Let's Encrypt (SSL)${NC}"
+read -p "Email: " EMAIL </dev/tty
+EMAIL=${EMAIL:-"admin@$DOMAIN"}
+
 # SSH-ссылка для приватного репозитория
 REPO_URL="git@github.com:rubbannov/my-hugo-site.git"
 REPO_DIR="/var/www/hugo-repo"
@@ -116,8 +121,26 @@ if [[ "$DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     SITE_URL="http://$DOMAIN"
 else
     issue_ssl() {
-        certbot certonly --standalone -d "$DOMAIN" --non-interactive --agree-tos --register-unsafely-without-email
+        # Поднимаем временный HTTP-конфиг для успешного прохождения проверки Certbot
+        cat << EOF > /etc/nginx/sites-available/$DOMAIN
+server {
+    listen 80;
+    server_name $DOMAIN;
+    root $SITE_DIR;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ =404;
     }
+}
+EOF
+        ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
+        rm -f /etc/nginx/sites-enabled/default
+        systemctl reload nginx
+
+        # Выпускаем сертификат с указанной почтой через плагин Nginx
+        certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "$EMAIL"
+    }
+    
     if run_with_spinner "Выпуск SSL-сертификата Let's Encrypt" issue_ssl; then
         SITE_URL="https://$DOMAIN"
     else
