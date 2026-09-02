@@ -1,3 +1,3 @@
 запуск:
 
-`curl -sSL https://raw.githubusercontent.com/rubbannov/zaimbabve/v0.0.1/install.sh | bash`
+`curl -sSL https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh -o install.sh && bash install.sh`
