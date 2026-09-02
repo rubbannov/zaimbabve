@@ -120,9 +120,10 @@ if [[ "$DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo -e "${YELLOW}[!] Указан IP ($DOMAIN) — выпуск SSL пропущен.${NC}"
     SITE_URL="http://$DOMAIN"
 else
-    issue_ssl() {
-        # Поднимаем временный HTTP-конфиг для успешного прохождения проверки Certbot
-        cat << EOF > /etc/nginx/sites-available/$DOMAIN
+    echo -e "${CYAN}[⏳] Подготовка Nginx для выпуска SSL-сертификата...${NC}"
+    
+    # 1. Создаем временный конфиг для прохождения ACME-челленджа
+    cat << EOF > /etc/nginx/sites-available/$DOMAIN
 server {
     listen 80;
     server_name $DOMAIN;
@@ -133,17 +134,18 @@ server {
     }
 }
 EOF
-        ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
-        rm -f /etc/nginx/sites-enabled/default
-        systemctl reload nginx
+    ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
+    systemctl reload nginx
 
-        # Выпускаем сертификат с указанной почтой через плагин Nginx
-        certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "$EMAIL"
-    }
+    echo -e "${CYAN}[⏳] Запуск Certbot для домена $DOMAIN...${NC}"
     
-    if run_with_spinner "Выпуск SSL-сертификата Let's Encrypt" issue_ssl; then
+    # 2. Запускаем Certbot полноценно, без спиннера и без скрытия вывода
+    if certbot --nginx -d "$DOMAIN" --agree-tos -m "$EMAIL"; then
         SITE_URL="https://$DOMAIN"
+        echo -e "${GREEN}[✔] SSL-сертификат успешно выпущен!${NC}"
     else
+        echo -e "${YELLOW}[✖] Ошибка выпуска SSL. Переключаемся на HTTP.${NC}"
         SITE_URL="http://$DOMAIN"
     fi
 fi
