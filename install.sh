@@ -47,13 +47,13 @@ echo -e "${GREEN}=== Интерактивная авто-установка Hugo
 SERVER_IP=$(curl -s https://api.ipify.org || curl -s https://ifconfig.me)
 
 # 2. Интерактивный запрос домена
-echo -e "${YELLOW}Введите ваш домен (например, example.com)${NC}"
+echo -e "${YELLOW}Введите ваш домен для [$SERVER_IP], который вы обязательно предварительно прописали в DNS (например, example.com)${NC}"
 read -p "Или нажмите Enter, чтобы использовать IP [$SERVER_IP]: " DOMAIN
 DOMAIN=${DOMAIN:-$SERVER_IP}
 
 # 3. Интерактивный запрос ключа вебхука
 DEFAULT_SECRET="deploy-hugo-secretkey2026"
-read -p "Введите секретный ключ для Webhook [$DEFAULT_SECRET]: " WEBHOOK_SECRET
+read -p "Введите секретный ключ для Webhook (дефолтное значение [$DEFAULT_SECRET]): " WEBHOOK_SECRET
 WEBHOOK_SECRET=${WEBHOOK_SECRET:-$DEFAULT_SECRET}
 
 # 4. Интерактивный запрос Email для Certbot
@@ -78,7 +78,7 @@ configure_ufw() {
     ufw allow 443/tcp comment 'HTTPS'
     ufw allow 9000/tcp comment 'Webhook Port'
     ufw allow 22/tcp comment 'SSH standard'
-    ufw allow 2222/tcp comment 'SSH custom'
+    ufw allow 2222/tcp comment 'Remnanode'
     if ! ufw status | grep -q "Status: active"; then
         echo "y" | ufw enable
     fi
@@ -221,4 +221,5 @@ echo -e " 1. Перейдите в ваш репозиторий GitHub -> ${CYA
 echo -e " 2. Payload URL: ${CYAN}http://$SERVER_IP:9000/hooks/$WEBHOOK_SECRET${NC}"
 echo -e " 3. Content type: ${CYAN}application/json${NC}"
 echo -e " 4. Нажмите ${GREEN}Add webhook${GREEN}"
+echo -e " ИНАЧЕ ДЕПЛОЙ АВТОМАТИЧЕСКИ ${GREEN}РАБОТАТЬ НЕ БУДЕТ${GREEN}"
 echo -e "${GREEN}==================================================================${NC}"
