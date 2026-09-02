@@ -94,7 +94,7 @@ SSH_PUB_KEY=$(cat /root/.ssh/id_ed25519.pub)
 echo -e "\n${YELLOW}🔑 ВНИМАНИЕ! Репозиторий приватный. Скопируйте этот SSH-ключ:${NC}\n"
 echo -e "${CYAN}$SSH_PUB_KEY${NC}\n"
 echo -e "${YELLOW}Добавьте его в GitHub: Репозиторий -> Settings -> Deploy keys -> Add deploy key${NC}"
-read -p "Нажмите Enter после того, как добавите ключ в GitHub..."
+read -p "Нажмите Enter после того, как добавите ключ в GitHub..." </dev/tty
 
 # Добавляем github.com в известных хостов, чтобы git clone не запрашивал подтверждение finger-print
 mkdir -p /root/.ssh
