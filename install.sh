@@ -70,7 +70,22 @@ echo -e "\n${CYAN}--- Начало настройки системы ---${NC}"
 
 # Установка системных пакетов
 run_with_spinner "Установка Nginx, Hugo, Webhook, Certbot и UFW" \
-    apt-get update && apt-get install -y nginx hugo webhook git curl certbot python3-certbot-nginx ufw
+    apt-get update && apt-get install -y nginx webhook git curl certbot python3-certbot-nginx ufw
+
+install_hugo() {
+    # Удаляем старую версию из apt, если была
+    apt-get remove -y hugo 2>/dev/null || true
+
+    # Скачиваем свежую версию Hugo Extended (например, v0.146.0 или новее)
+    HUGO_VERSION="0.146.0"
+    ARCH=$(dpkg --print-architecture)
+    
+    wget -q "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-${ARCH}.deb" -O /tmp/hugo.deb
+    dpkg -i /tmp/hugo.deb
+    rm -f /tmp/hugo.deb
+}
+
+run_with_spinner "Установка актуальной версии Hugo Extended" install_hugo
 
 # Настройка фаервола
 configure_ufw() {
