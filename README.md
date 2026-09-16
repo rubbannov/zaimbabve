@@ -3,7 +3,7 @@
 Разворачивание готового (из репозитория GitHub) сайта Hugo, веб-сервера Nginx, SSL-сертификата Let's Encrypt и автодеплоя через GitHub Webhook выполняется одной командой:
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh](https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh) -o install.sh && bash install.sh
+curl -sSL https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh -o install.sh && bash install.sh
  ```
 
 ### 📋 Что понадобится во время установки:
