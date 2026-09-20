@@ -130,6 +130,32 @@ clone_repo() {
 }
 run_with_spinner "Клонирование приватного репозитория по SSH" clone_repo
 
+# Случайный выбор темы Hugo (один раз)
+THEME_FILE="/etc/hugo-theme"
+declare -A THEMES=(
+  [PaperMod]="https://github.com/adityatelange/hugo-PaperMod"
+  [stack]="https://github.com/CaiJimmy/hugo-theme-stack"
+  [coder]="https://github.com/luizdepra/hugo-coder"
+  [terminal]="https://github.com/panr/hugo-theme-terminal"
+  [paper]="https://github.com/nanxiaobei/hugo-paper"
+  [blowfish]="https://github.com/nunocoracao/blowfish"
+  [congo]="https://github.com/jpanther/congo"
+  [ananke]="https://github.com/theNewDynamic/gohugo-theme-ananke"
+  [beautifulhugo]="https://github.com/halogenica/beautifulhugo"
+  [archie]="https://github.com/athul/archie"
+)
+
+install_theme() {
+    if [ ! -f "$THEME_FILE" ]; then
+        KEYS=("${!THEMES[@]}")
+        echo "${KEYS[RANDOM % ${#KEYS[@]}]}" > "$THEME_FILE"
+    fi
+    THEME=$(cat "$THEME_FILE")
+    rm -rf "$REPO_DIR/themes/$THEME"
+    git clone --depth 1 "${THEMES[$THEME]}" "$REPO_DIR/themes/$THEME"
+}
+run_with_spinner "Установка темы Hugo" install_theme
+
 # Выпуск SSL (до подстановки эталонного конфига Nginx)
 if [[ "$DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo -e "${YELLOW}[!] Указан IP ($DOMAIN) — выпуск SSL пропущен.${NC}"
@@ -172,7 +198,7 @@ cat << EOF > /usr/local/bin/deploy-hugo.sh
 set -e
 cd "$REPO_DIR"
 git pull origin main
-hugo -d "$SITE_DIR"
+hugo --theme "\$(cat /etc/hugo-theme)" -d "$SITE_DIR"
 EOF
 chmod +x /usr/local/bin/deploy-hugo.sh
 
