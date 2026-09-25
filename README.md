@@ -15,3 +15,8 @@ curl -sSL https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh 
 - Скрипт сгенерирует SSH-ключ сервера и выведет его на экран.
 -Добавьте этот ключ в GitHub: Репозиторий -> Settings -> Deploy keys -> Add deploy key.
 - Нажмите Enter в консоли для продолжения установки.
+
+Затем можно размещать ноду:
+```bash
+bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install
+```
