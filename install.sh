@@ -173,6 +173,7 @@ set -e
 cd "$REPO_DIR"
 git pull origin main
 hugo -d "$SITE_DIR"
+hugo --baseURL "https://$DOMAIN" --theme "\$(cat /etc/hugo-theme)" -d "$SITE_DIR"
 EOF
 chmod +x /usr/local/bin/deploy-hugo.sh
 
