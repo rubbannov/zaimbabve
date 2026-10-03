@@ -77,7 +77,7 @@ install_hugo() {
     apt-get remove -y hugo 2>/dev/null || true
 
     # Скачиваем свежую версию Hugo Extended (например, v0.146.0 или новее)
-    HUGO_VERSION="0.146.0"
+    HUGO_VERSION="0.159.2"
     ARCH=$(dpkg --print-architecture)
     
     wget -q "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-${ARCH}.deb" -O /tmp/hugo.deb
