@@ -20,3 +20,8 @@ curl -sSL https://raw.githubusercontent.com/rubbannov/zaimbabve/main/install.sh 
 ```bash
 bash <(curl -Ls https://github.com/DigneZzZ/remnawave-scripts/raw/main/remnanode.sh) @ install
 ```
+
+Проверка как сервисы видят гео IP сервера:
+```bash
+bash <(wget -qO- https://ipregion.vrnt.xyz)
+```
